@@ -1,0 +1,41 @@
+## macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+## IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+## Environment and secrets
+.env
+.env.*
+!.env.example
+
+## Logs
+*.log
+logs/
+
+## Dependencies and build output
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+tmp/
+temp/
+
+## Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+## Local databases
+*.sqlite
+*.sqlite3
+*.db
