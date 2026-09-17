@@ -1,0 +1,64 @@
+.home {
+  min-height: 100vh;
+  background: #050607;
+}
+.home__main {
+  min-height: 100vh;
+  margin-left: 210px;
+}
+.home__content {
+  max-width: 1180px;
+  padding: 0 34px 56px;
+}
+.home__section {
+  margin-top: 0;
+  padding-top: 1px;
+}
+.home__section + .home__section {
+  margin-top: 27px;
+}
+.continue-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+  scrollbar-width: thin;
+}
+.trending-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px;
+  max-width: 930px;
+}
+.movies-status {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #8c8c8c;
+  font-size: 14px;
+}
+@media (max-width: 900px) {
+  .home__main {
+    margin-left: 0;
+  }
+  .home__content {
+    padding: 0 24px 45px;
+  }
+  .trending-grid {
+    gap: 18px;
+  }
+}
+@media (max-width: 620px) {
+  .home__content {
+    padding: 0 20px 35px;
+  }
+  .trending-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 14px;
+  }
+  .continue-row {
+    margin-right: -20px;
+  }
+  .section-title {
+    font-size: 23px;
+  }
+}
