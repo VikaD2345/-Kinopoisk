@@ -19,7 +19,7 @@ function Home() {
   useEffect(() => {
     const loadMovies = async () => {
       try {
-        const response = await fetch('http://localhost:3000/movies')
+        const response = await fetch('/api/movies')
 
         if (!response.ok) {
           throw new Error('Не удалось загрузить фильмы')
@@ -61,13 +61,13 @@ function Home() {
             <div className="trending-grid">
               {isLoadingMovies && <p className="movies-status">Загрузка фильмов...</p>}
 
-              {movies.map(({ id, title, year, poster, rating }) => (
+              {movies.map(({ id, title, year, image, poster, rating }) => (
                 <MovieCard
                   id={id}
                   key={id}
                   title={title}
                   year={year}
-                  poster={poster}
+                  poster={image ?? poster}
                   rating={rating}
                   onClick={() => {}}
                 />

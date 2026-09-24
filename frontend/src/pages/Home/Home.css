@@ -26,9 +26,9 @@
 }
 .trending-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 32px;
-  max-width: 930px;
+  max-width: 100%;
 }
 .movies-status {
   grid-column: 1 / -1;
