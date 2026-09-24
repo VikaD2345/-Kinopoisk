@@ -1,16 +1,4 @@
-import "./SearchBar.css";
-function SearchBar() {
-  return (
-    <label className="search-bar">
-      <span className="search-bar__icon" aria-hidden="true">
-        ⌕
-      </span>
-      <input
-        type="search"
-        placeholder="Поиск фильмов, сериалов..."
-        aria-label="Поиск фильмов и сериалов"
-      />
-    </label>
-  );
-}
-export default SearchBar;
+import { Search, X } from 'lucide-react'
+import './SearchBar.css'
+function SearchBar({ value, onChange }) { return <label className="search-bar"><Search/><input value={value} onChange={e=>onChange(e.target.value)} type="search" placeholder="Фильмы, сериалы, жанры..." />{value&&<button type="button" onClick={()=>onChange('')}><X/></button>}</label> }
+export default SearchBar

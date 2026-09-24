@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "id": "dune-2",
+      "type": "movie",
+      "title": "Дюна: Часть вторая",
+      "original": "Dune: Part Two",
+      "year": 2024,
+      "rating": 8.5,
+      "age": "16+",
+      "duration": "2 ч 46 мин",
+      "genres": ["фантастика", "драма"],
+      "director": "Дени Вильнёв",
+      "description": "Описание фильма",
+      "poster": "/media/posters/dune-2.jpg",
+      "backdrop": "/media/backdrops/dune-2.jpg"
+    }
+  ]
+}

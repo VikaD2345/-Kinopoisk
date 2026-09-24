@@ -1,23 +1,56 @@
+import { Bookmark, Check, Play } from "lucide-react";
 import "./MovieCard.css";
-function MovieCard({ id, title, year, poster, rating, onClick }) {
+import "./MovieCardPlaceholder.css";
+function MovieCard({ item, saved, onOpen, onToggle, index = 0 }) {
   return (
-    <article className="movie-card" onClick={onClick} data-movie-id={id}>
-      <button
-        type="button"
+    <article
+      className="movie-card"
+      style={{ "--delay": `${Math.min(index, 10) * 55}ms` }}
+    >
+      <div
         className="movie-card__poster"
-        aria-label={`Открыть фильм «${title}»`}
+        role="button"
+        tabIndex="0"
+        onClick={() => onOpen(item)}
+        onKeyDown={(e) => e.key === "Enter" && onOpen(item)}
+        aria-label={`Открыть «${item.title}»`}
       >
-        <img
-          src={poster}
-          alt={`Постер «${title}»`}
-          onError={(event) => {
-            event.currentTarget.style.display = "none";
+        {item.poster ? (
+          <img
+            src={item.poster}
+            alt={`Постер «${item.title}»`}
+            loading="lazy"
+          />
+        ) : (
+          <div
+            className="movie-card__placeholder"
+            aria-label="Место для постера"
+          >
+            <span>VAMS</span>
+            <small>POSTER</small>
+          </div>
+        )}
+        <span className="movie-card__shade" />
+        <span className="movie-card__play">
+          <Play fill="currentColor" />
+        </span>
+        <span className="movie-card__rating">★ {item.rating}</span>
+        <button
+          className={`movie-card__save ${saved ? "is-saved" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle(item.id);
           }}
-        />
-        {rating && <span className="movie-card__rating">★ {rating}</span>}
-      </button>
-      <h3>{title}</h3>
-      <p>{year}</p>
+          aria-label="Добавить в список"
+        >
+          {saved ? <Check /> : <Bookmark />}
+        </button>
+      </div>
+      <h3>{item.title}</h3>
+      <p>
+        {item.year}
+        {item.endYear ? `–${item.endYear}` : ""} <span>•</span> {item.genres[0]}
+      </p>
     </article>
   );
 }

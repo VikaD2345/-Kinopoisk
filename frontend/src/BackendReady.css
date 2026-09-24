@@ -1,0 +1,51 @@
+.hero--placeholder::before,
+.detail__hero--placeholder::before {
+  background-image: none;
+  background-color: #111315;
+}
+
+.hero__media-placeholder,
+.detail__media-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 13%;
+  overflow: hidden;
+  color: #202326;
+  background:
+    radial-gradient(circle at 72% 48%, #1e2124 0, #111315 28%, transparent 52%),
+    linear-gradient(135deg, #111315, #090a0b);
+  font-family: Georgia, serif;
+  font-size: clamp(42px, 7vw, 110px);
+  letter-spacing: 12px;
+}
+
+.detail__media-placeholder {
+  justify-content: center;
+  padding: 0 0 0 30%;
+}
+
+.api-status {
+  position: fixed;
+  z-index: 50;
+  right: 30px;
+  bottom: 24px;
+  padding: 9px 13px;
+  border: 1px solid #292b2d;
+  border-radius: 7px;
+  color: #969696;
+  background: rgba(8, 9, 10, 0.9);
+  font-size: 11px;
+  backdrop-filter: blur(12px);
+}
+
+@media (max-width: 800px) {
+  .hero__media-placeholder,
+  .detail__media-placeholder {
+    justify-content: center;
+    padding: 0 0 0 20%;
+    font-size: 38px;
+  }
+}
