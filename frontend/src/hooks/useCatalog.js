@@ -15,6 +15,26 @@ const mediaUrl = (value, apiUrl) => {
   }
 };
 
+const normalizeItem = (item, apiUrl, type) => ({
+  ...item,
+  id: String(item.id),
+  type,
+  original: item.original || item.title,
+  rating: item.rating ?? null,
+  age: item.age || "",
+  duration: item.duration || "",
+  genres: Array.isArray(item.genres) ? item.genres : [],
+  director: item.director || "Не указан",
+  poster: mediaUrl(
+    item.poster ?? item.posterUrl ?? item.poster_url ?? item.image,
+    apiUrl,
+  ),
+  backdrop: mediaUrl(
+    item.backdrop ?? item.backdropUrl ?? item.backdrop_url ?? item.image,
+    apiUrl,
+  ),
+});
+
 export function useCatalog(initialCatalog, apiUrl) {
   const [items, setItems] = useState(initialCatalog);
   const [status, setStatus] = useState(apiUrl ? "loading" : "local");
@@ -29,32 +49,32 @@ export function useCatalog(initialCatalog, apiUrl) {
     async function loadCatalog() {
       try {
         setStatus("loading");
-        const response = await fetch(`${apiUrl.replace(/\/$/, "")}/catalog`, {
+        const requestOptions = {
           signal: controller.signal,
           headers: { Accept: "application/json" },
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        };
+        const baseUrl = apiUrl.replace(/\/$/, "");
+        const [moviesResponse, seriesResponse] = await Promise.all([
+          fetch(`${baseUrl}/movies`, requestOptions),
+          fetch(`${baseUrl}/series`, requestOptions),
+        ]);
 
-        const remoteItems = toArray(await response.json());
-        const localById = new Map(
-          initialCatalog.map((item) => [String(item.id), item]),
+        if (!moviesResponse.ok) {
+          throw new Error(`HTTP movies=${moviesResponse.status}`);
+        }
+
+        const remoteMovies = toArray(await moviesResponse.json()).map((item) =>
+          normalizeItem(item, apiUrl, "movie"),
         );
-        const normalized = remoteItems.map((item) => ({
-          ...localById.get(String(item.id)),
-          ...item,
-          id: String(item.id),
-          poster: mediaUrl(
-            item.poster ?? item.posterUrl ?? item.poster_url,
-            apiUrl,
-          ),
-          backdrop: mediaUrl(
-            item.backdrop ?? item.backdropUrl ?? item.backdrop_url,
-            apiUrl,
-          ),
-        }));
+        const remoteSeries = seriesResponse.ok
+          ? toArray(await seriesResponse.json()).map((item) =>
+              normalizeItem(item, apiUrl, "series"),
+            )
+          : initialCatalog.filter((item) => item.type === "series");
+        const normalized = [...remoteMovies, ...remoteSeries];
 
         setItems(normalized);
-        setStatus("ready");
+        setStatus(seriesResponse.ok ? "ready" : "partial");
       } catch (error) {
         if (error.name !== "AbortError") {
           console.warn(

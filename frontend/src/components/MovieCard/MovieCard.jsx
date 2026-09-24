@@ -34,7 +34,9 @@ function MovieCard({ item, saved, onOpen, onToggle, index = 0 }) {
         <span className="movie-card__play">
           <Play fill="currentColor" />
         </span>
-        <span className="movie-card__rating">★ {item.rating}</span>
+        {item.rating != null && (
+          <span className="movie-card__rating">★ {item.rating}</span>
+        )}
         <button
           className={`movie-card__save ${saved ? "is-saved" : ""}`}
           onClick={(e) => {
@@ -49,7 +51,8 @@ function MovieCard({ item, saved, onOpen, onToggle, index = 0 }) {
       <h3>{item.title}</h3>
       <p>
         {item.year}
-        {item.endYear ? `–${item.endYear}` : ""} <span>•</span> {item.genres[0]}
+        {item.endYear ? `–${item.endYear}` : ""} <span>•</span>{" "}
+        {item.genres?.[0] || "фильм"}
       </p>
     </article>
   );

@@ -35,7 +35,7 @@ const pageInfo = {
 
 function App({
   initialCatalog = localCatalog,
-  apiUrl = import.meta.env.VITE_API_URL,
+  apiUrl = import.meta.env.VITE_API_URL || "/api",
 }) {
   const parseHash = () => {
     const value = location.hash.slice(1);
@@ -318,14 +318,14 @@ function Home({
         <div className="hero__grain" />
         <div className="hero__content">
           <p className="eyebrow">VAMS ORIGINAL · ВЫБОР РЕДАКЦИИ</p>
-          <h1 className={activeMovie.title.length > 18 ? "hero__title--long" : ""}>
-            {activeMovie.title}<span>{activeMovie.original}</span>
+          <h1>
+            Дюна<span>Часть вторая</span>
           </h1>
           <div className="hero__meta">
-            <b>★ {activeMovie.rating}</b>
-            <span>{activeMovie.year}</span>
-            <span>{activeMovie.age}</span>
-            <span>{activeMovie.duration}</span>
+            <b>★ {featured.rating}</b>
+            <span>{featured.year}</span>
+            <span>{featured.age}</span>
+            <span>{featured.duration}</span>
           </div>
           <p>{activeMovie.description}</p>
           <div className="hero__actions">
@@ -441,7 +441,31 @@ function SearchResults({ items, saved, onOpen, onToggle, query }) {
   );
 }
 
+function getPlayerSource(value) {
+  if (!value || value.includes("example.com")) return null;
+
+  const vkVideo = value.match(
+    /^https?:\/\/(?:www\.)?(?:vkvideo\.ru|vk\.com)\/video(-?\d+)_(\d+)/i,
+  );
+
+  if (vkVideo) {
+    const [, ownerId, videoId] = vkVideo;
+    return {
+      type: "iframe",
+      url: `https://vkvideo.ru/video_ext.php?oid=${ownerId}&id=${videoId}&hd=2`,
+    };
+  }
+
+  if (/\.(?:mp4|webm|ogg)(?:[?#].*)?$/i.test(value)) {
+    return { type: "video", url: value };
+  }
+
+  return { type: "iframe", url: value };
+}
+
 function Detail({ item, saved, onBack, onToggle }) {
+  const playerSource = getPlayerSource(item.src);
+
   return (
     <article className="detail">
       <section
@@ -500,12 +524,28 @@ function Detail({ item, saved, onBack, onToggle }) {
         </div>
       </section>
       <div className="detail__body">
-        <section className="player">
-          <button aria-label="Воспроизвести">
-            <Play fill="currentColor" />
-          </button>
-          <p>Плеер VAMS</p>
-          <span>Место для подключения видеопотока</span>
+        <section className={`player ${playerSource ? "player--active" : ""}`}>
+          {playerSource?.type === "video" ? (
+            <video className="player__video" controls src={playerSource.url}>
+              Ваш браузер не поддерживает воспроизведение видео.
+            </video>
+          ) : playerSource?.type === "iframe" ? (
+            <iframe
+              className="player__frame"
+              src={playerSource.url}
+              title={`Смотреть «${item.src}»`}
+              allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock"
+              allowFullScreen
+            />
+          ) : (
+            <>
+              <button aria-label="Воспроизвести">
+                <Play fill="currentColor" />
+              </button>
+              <p>Плеер VAMS</p>
+              <span>Для этого фильма видеопоток пока не добавлен</span>
+            </>
+          )}
         </section>
         <aside className="facts">
           <p>

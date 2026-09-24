@@ -4,6 +4,7 @@ import genresRouter from "./routes/genresRouter.js";
 import movieGenresRouter from "./routes/movieGenresRouter.js";
 import reviewsRouter from "./routes/reviewsRouter.js";
 import usersRouter from "./routes/usersRouter.js";
+import seriesRouter from "./routes/seriesRouter.js";
 import { checkDatabaseConnection } from "./database/db.js";
 import { authenticate } from "./middleware/auth.js";
 
@@ -18,6 +19,7 @@ app.use("/genres", genresRouter);
 app.use("/movie_genres", movieGenresRouter);
 app.use("/reviews", reviewsRouter);
 app.use("/users", usersRouter);
+app.use("/series", seriesRouter);
 
 try {
   await checkDatabaseConnection();

@@ -10,6 +10,22 @@ CREATE TABLE IF NOT EXISTS public.users (
   CONSTRAINT users_role_check CHECK (role IN ('guest', 'client', 'admin'))
 );
 
+CREATE TABLE IF NOT EXISTS public.series (
+  id varchar(100) PRIMARY KEY,
+  title varchar(255) NOT NULL,
+  original varchar(255) NOT NULL,
+  year integer NOT NULL CHECK (year >= 1888),
+  end_year integer CHECK (end_year IS NULL OR end_year >= year),
+  rating numeric(3, 1) CHECK (rating IS NULL OR rating BETWEEN 0 AND 10),
+  age varchar(10) NOT NULL DEFAULT '',
+  duration varchar(50) NOT NULL DEFAULT '',
+  genres text[] NOT NULL DEFAULT '{}',
+  director varchar(255) NOT NULL DEFAULT '',
+  description text NOT NULL,
+  image text NOT NULL,
+  src text NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS public.movie_genres (
   movie_id integer NOT NULL REFERENCES public.movies(id) ON DELETE CASCADE,
   genre_id integer NOT NULL REFERENCES public.genres(id) ON DELETE CASCADE,
