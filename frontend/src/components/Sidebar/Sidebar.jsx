@@ -6,7 +6,7 @@ const links = [
   { icon:Clapperboard, label:'Фильмы', route:'movies' },
   { icon:Tv, label:'Сериалы', route:'series' },
   { icon:Sparkles, label:'Новинки', route:'new' },
-  { icon:Bookmark, label:'Мой список', route:'my-list' },
+  { icon:Bookmark, label:'Избранное', route:'favorites' },
 ]
 
 function Sidebar({ route, onNavigate }) {
@@ -15,7 +15,6 @@ function Sidebar({ route, onNavigate }) {
     <nav className="sidebar__nav" aria-label="Навигация">
       {links.map(({ icon:Icon, label, route:itemRoute }) => <button className={`sidebar__link ${route === itemRoute ? 'sidebar__link--active' : ''}`} onClick={() => onNavigate(itemRoute)} key={itemRoute}><Icon aria-hidden="true" />{label}</button>)}
     </nav>
-    <div className="sidebar__footer"><span className="sidebar__status" />Кино начинается здесь</div>
   </aside>
 }
 export default Sidebar

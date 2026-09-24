@@ -6,23 +6,27 @@ import {
   Check,
   ChevronRight,
   Info,
+  LogOut,
   Play,
+  ShieldCheck,
   Star,
 } from "lucide-react";
 import MovieCard from "./components/MovieCard/MovieCard";
 import SearchBar from "./components/SearchBar/SearchBar";
 import Sidebar from "./components/Sidebar/Sidebar";
+import Auth from "./pages/Auth/Auth";
 import { catalog as localCatalog } from "./data/catalog";
 import { useCatalog } from "./hooks/useCatalog";
 import "./App.css";
 import "./HeroFix.css";
 import "./BackendReady.css";
+import "./AuthStates.css";
 
 const pageInfo = {
   movies: ["Фильмы", "Истории, к которым хочется возвращаться"],
   series: ["Сериалы", "Миры, в которых можно остаться надолго"],
   new: ["Новинки", "Самое свежее в нашей коллекции"],
-  "my-list": ["Мой список", "Всё, что вы отложили на потом"],
+  favorites: ["Избранное", "Всё, что вы сохранили для просмотра"],
 };
 
 function App({
@@ -39,9 +43,19 @@ function App({
   const [query, setQuery] = useState("");
   const [saved, setSaved] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem("vams-list")) || [];
+      return JSON.parse(
+        localStorage.getItem("vams-favorites") ||
+          localStorage.getItem("vams-list"),
+      ) || [];
     } catch {
       return [];
+    }
+  });
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("vams-user"));
+    } catch {
+      return null;
     }
   });
   const { items: catalog, status: catalogStatus } = useCatalog(
@@ -66,7 +80,7 @@ function App({
     return () => removeEventListener("hashchange", change);
   }, []);
   useEffect(
-    () => localStorage.setItem("vams-list", JSON.stringify(saved)),
+    () => localStorage.setItem("vams-favorites", JSON.stringify(saved)),
     [saved],
   );
   const navigate = (route) => {
@@ -74,10 +88,58 @@ function App({
     location.hash = route === "home" ? "" : route;
   };
   const open = (item) => navigate(`title/${item.id}`);
-  const toggle = (id) =>
+  const toggle = (id) => {
+    if (!currentUser) {
+      navigate("login");
+      return;
+    }
     setSaved((current) =>
       current.includes(id) ? current.filter((x) => x !== id) : [...current, id],
     );
+  };
+  const authenticate = (form, mode) => {
+    const email = form.email.trim().toLowerCase();
+    let users = [];
+    try {
+      users = JSON.parse(localStorage.getItem("vams-users")) || [];
+    } catch {
+      users = [];
+    }
+
+    if (mode === "register") {
+      if (users.some((user) => user.email === email)) {
+        return { error: "Аккаунт с такой почтой уже существует" };
+      }
+      const user = {
+        id: crypto.randomUUID(),
+        name: form.name.trim(),
+        email,
+        password: form.password,
+      };
+      users.push(user);
+      localStorage.setItem("vams-users", JSON.stringify(users));
+      const session = { id: user.id, name: user.name, email: user.email };
+      localStorage.setItem("vams-user", JSON.stringify(session));
+      setCurrentUser(session);
+      navigate("favorites");
+      return {};
+    }
+
+    const user = users.find(
+      (item) => item.email === email && item.password === form.password,
+    );
+    if (!user) return { error: "Неверная почта или пароль" };
+    const session = { id: user.id, name: user.name, email: user.email };
+    localStorage.setItem("vams-user", JSON.stringify(session));
+    setCurrentUser(session);
+    navigate("favorites");
+    return {};
+  };
+  const logout = () => {
+    localStorage.removeItem("vams-user");
+    setCurrentUser(null);
+    navigate("home");
+  };
   const filtered = useMemo(
     () =>
       query.trim()
@@ -110,7 +172,13 @@ function App({
             <button aria-label="Уведомления">
               <Bell />
             </button>
-            <span>M</span>
+            <button
+              className="topbar__avatar"
+              onClick={() => navigate(currentUser ? "account" : "login")}
+              aria-label={currentUser ? "Открыть профиль" : "Войти"}
+            >
+              {currentUser?.name?.[0]?.toUpperCase() || "В"}
+            </button>
           </div>
         </header>
         {catalogStatus === "loading" && (
@@ -123,6 +191,32 @@ function App({
             onOpen={open}
             onToggle={toggle}
             query={query}
+          />
+        ) : view.route === "login" ? (
+          <Auth
+            mode="login"
+            onSubmit={(form) => authenticate(form, "login")}
+            onSwitch={() => navigate("register")}
+          />
+        ) : view.route === "register" ? (
+          <Auth
+            mode="register"
+            onSubmit={(form) => authenticate(form, "register")}
+            onSwitch={() => navigate("login")}
+          />
+        ) : view.route === "account" ? (
+          currentUser ? (
+            <Account user={currentUser} onLogout={logout} />
+          ) : (
+            <AuthRequired
+              onLogin={() => navigate("login")}
+              onRegister={() => navigate("register")}
+            />
+          )
+        ) : view.route === "favorites" && !currentUser ? (
+          <AuthRequired
+            onLogin={() => navigate("login")}
+            onRegister={() => navigate("register")}
           />
         ) : detail ? (
           <Detail
@@ -275,7 +369,7 @@ function CatalogPage({
           {items.length}{" "}
           {route === "series"
             ? "сериалов"
-            : route === "my-list"
+            : route === "favorites"
               ? "в коллекции"
               : "фильмов"}
         </span>
@@ -366,7 +460,7 @@ function Detail({ item, saved, onBack, onToggle }) {
               onClick={onToggle}
             >
               {saved ? <Check /> : <Bookmark />}
-              {saved ? "В моём списке" : "В мой список"}
+              {saved ? "В избранном" : "В избранное"}
             </button>
           </div>
         </div>
@@ -443,6 +537,48 @@ function Empty({ onGo }) {
       <button className="button button--light" onClick={onGo}>
         Выбрать фильм
       </button>
+    </div>
+  );
+}
+
+function AuthRequired({ onLogin, onRegister }) {
+  return (
+    <div className="access-page">
+      <div className="access-card">
+        <ShieldCheck />
+        <p className="eyebrow">ТОЛЬКО ДЛЯ ПОЛЬЗОВАТЕЛЕЙ</p>
+        <h1>Войдите в аккаунт</h1>
+        <p>
+          Авторизуйтесь, чтобы сохранять фильмы и сериалы в избранном и иметь
+          доступ к ним с этой страницы.
+        </p>
+        <div>
+          <button className="button button--light" onClick={onLogin}>
+            Войти
+          </button>
+          <button className="button button--glass" onClick={onRegister}>
+            Создать аккаунт
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Account({ user, onLogout }) {
+  return (
+    <div className="account-page">
+      <section className="account-card">
+        <div className="account-card__avatar">
+          {user.name?.[0]?.toUpperCase() || "V"}
+        </div>
+        <p className="eyebrow">ПРОФИЛЬ VAMS</p>
+        <h1>{user.name}</h1>
+        <p>{user.email}</p>
+        <button className="button button--glass" onClick={onLogout}>
+          <LogOut /> Выйти из аккаунта
+        </button>
+      </section>
     </div>
   );
 }
