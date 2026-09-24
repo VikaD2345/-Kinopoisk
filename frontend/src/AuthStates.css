@@ -1,2 +1,93 @@
-.topbar__profile .topbar__avatar{display:grid;width:38px;height:38px;place-items:center;padding:0;border:1px solid #5a5a5a;border-radius:50%;color:#fff;background:#151617;font-size:13px;transition:.25s}.topbar__profile .topbar__avatar:hover{border-color:#9d392b;background:#431c17;transform:scale(1.05)}
-.access-page,.account-page{min-height:100vh;display:grid;place-items:center;padding:120px 24px 70px;background:radial-gradient(circle at 65% 35%,#201310 0,transparent 38%),#070809}.access-card,.account-card{width:min(520px,100%);padding:47px;border:1px solid #242628;border-radius:15px;background:rgba(11,12,13,.92);text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.4);animation:authIn .55s both}.access-card>svg{width:38px;height:38px;margin-bottom:22px;color:#994435}.access-card h1,.account-card h1{margin:0;font-family:Georgia,serif;font-size:42px;font-weight:400}.access-card>p:not(.eyebrow),.account-card>p:not(.eyebrow){margin:13px auto 27px;max-width:390px;color:#777;font-size:13px;line-height:1.7}.access-card>div{display:flex;justify-content:center;gap:10px}.account-card__avatar{display:grid;width:75px;height:75px;margin:0 auto 23px;place-items:center;border:1px solid #703027;border-radius:50%;color:#fff;background:linear-gradient(145deg,#57231c,#1a1010);font-family:Georgia,serif;font-size:29px}.account-card .button{margin-top:8px}@media(max-width:520px){.access-card,.account-card{padding:36px 22px}.access-card h1,.account-card h1{font-size:34px}.access-card>div{flex-direction:column}}
+.topbar__profile .topbar__avatar {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #5a5a5a;
+  border-radius: 50%;
+  color: #fff;
+  background: #151617;
+  font-size: 13px;
+  transition: 0.25s;
+}
+.topbar__profile .topbar__avatar:hover {
+  border-color: #9d392b;
+  background: #431c17;
+  transform: scale(1.05);
+}
+.access-page,
+.account-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 120px 24px 70px;
+  background:
+    radial-gradient(circle at 65% 35%, #201310 0, transparent 38%), #070809;
+}
+.access-card,
+.account-card {
+  width: min(520px, 100%);
+  padding: 47px;
+  border: 1px solid #242628;
+  border-radius: 15px;
+  background: rgba(11, 12, 13, 0.92);
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+  animation: authIn 0.55s both;
+}
+.access-card > svg {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 22px;
+  color: #994435;
+}
+.access-card h1,
+.account-card h1 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 42px;
+  font-weight: 400;
+}
+.access-card > p:not(.eyebrow),
+.account-card > p:not(.eyebrow) {
+  margin: 13px auto 27px;
+  max-width: 390px;
+  color: #777;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.access-card > div {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.account-card__avatar {
+  display: grid;
+  width: 75px;
+  height: 75px;
+  margin: 0 auto 23px;
+  place-items: center;
+  border: 1px solid #703027;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(145deg, #57231c, #1a1010);
+  font-family: Georgia, serif;
+  font-size: 29px;
+}
+.account-card .button {
+  margin-top: 8px;
+}
+@media (max-width: 520px) {
+  .access-card,
+  .account-card {
+    padding: 36px 22px;
+  }
+  .access-card h1,
+  .account-card h1 {
+    font-size: 34px;
+  }
+  .access-card > div {
+    flex-direction: column;
+  }
+}

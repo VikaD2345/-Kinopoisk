@@ -43,10 +43,12 @@ function App({
   const [query, setQuery] = useState("");
   const [saved, setSaved] = useState(() => {
     try {
-      return JSON.parse(
-        localStorage.getItem("vams-favorites") ||
-          localStorage.getItem("vams-list"),
-      ) || [];
+      return (
+        JSON.parse(
+          localStorage.getItem("vams-favorites") ||
+            localStorage.getItem("vams-list"),
+        ) || []
+      );
     } catch {
       return [];
     }
