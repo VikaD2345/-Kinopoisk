@@ -1,0 +1,19 @@
+.hero h1.hero__title--long {
+  max-width: 650px;
+  font-size: clamp(42px, 5vw, 70px);
+  line-height: 0.95;
+  letter-spacing: -3px;
+}
+
+.hero h1.hero__title--long span {
+  margin-top: 10px;
+}
+
+.hero__slider-nav > button {
+  opacity: 0.75;
+  transform: scale(1);
+}
+
+.hero__slider-nav > button:hover {
+  opacity: 1;
+}

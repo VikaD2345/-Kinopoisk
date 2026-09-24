@@ -4,6 +4,7 @@ import {
   Bell,
   Bookmark,
   Check,
+  ChevronLeft,
   ChevronRight,
   Info,
   LogOut,
@@ -21,6 +22,9 @@ import "./App.css";
 import "./HeroFix.css";
 import "./BackendReady.css";
 import "./AuthStates.css";
+import "./Roboto.css";
+import "./HeroSlider.css";
+import "./HeroTitle.css";
 
 const pageInfo = {
   movies: ["Фильмы", "Истории, к которым хочется возвращаться"],
@@ -264,7 +268,31 @@ function Home({
   onToggle,
   onNavigate,
 }) {
-  if (!featured)
+  const slides = useMemo(() => {
+    const newest = [...movies]
+      .filter((movie) => movie.year >= 2022)
+      .sort((a, b) => b.year - a.year)
+      .slice(0, 5);
+    return newest.length ? newest : movies.slice(0, 5);
+  }, [movies]);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const activeMovie = slides[activeSlide % Math.max(slides.length, 1)] || featured;
+  const changeSlide = (direction) => {
+    setActiveSlide((current) =>
+      (current + direction + slides.length) % slides.length,
+    );
+  };
+
+  useEffect(() => {
+    if (slides.length < 2) return undefined;
+    const timer = setInterval(
+      () => setActiveSlide((current) => (current + 1) % slides.length),
+      8000,
+    );
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  if (!activeMovie)
     return (
       <div className="empty">
         <h2>Каталог пуст</h2>
@@ -274,14 +302,15 @@ function Home({
   return (
     <div className="page page--home">
       <section
-        className={`hero ${featured.backdrop ? "" : "hero--placeholder"}`}
+        key={activeMovie.id}
+        className={`hero ${activeMovie.backdrop ? "" : "hero--placeholder"}`}
         style={
-          featured.backdrop
-            ? { "--hero": `url(${featured.backdrop})` }
+          activeMovie.backdrop
+            ? { "--hero": `url(${activeMovie.backdrop})` }
             : undefined
         }
       >
-        {!featured.backdrop && (
+        {!activeMovie.backdrop && (
           <div className="hero__media-placeholder">
             <span>BACKDROP</span>
           </div>
@@ -289,36 +318,39 @@ function Home({
         <div className="hero__grain" />
         <div className="hero__content">
           <p className="eyebrow">VAMS ORIGINAL · ВЫБОР РЕДАКЦИИ</p>
-          <h1>
-            Дюна<span>Часть вторая</span>
+          <h1 className={activeMovie.title.length > 18 ? "hero__title--long" : ""}>
+            {activeMovie.title}<span>{activeMovie.original}</span>
           </h1>
           <div className="hero__meta">
-            <b>★ {featured.rating}</b>
-            <span>{featured.year}</span>
-            <span>{featured.age}</span>
-            <span>{featured.duration}</span>
+            <b>★ {activeMovie.rating}</b>
+            <span>{activeMovie.year}</span>
+            <span>{activeMovie.age}</span>
+            <span>{activeMovie.duration}</span>
           </div>
-          <p>{featured.description}</p>
+          <p>{activeMovie.description}</p>
           <div className="hero__actions">
             <button
               className="button button--light"
-              onClick={() => onOpen(featured)}
+              onClick={() => onOpen(activeMovie)}
             >
               <Play fill="currentColor" />
               Смотреть
             </button>
             <button
               className="button button--glass"
-              onClick={() => onOpen(featured)}
+              onClick={() => onOpen(activeMovie)}
             >
               <Info />
               Подробнее
             </button>
           </div>
         </div>
-        <div className="hero__index">
-          <i />
-          01 <span>/ 05</span>
+        <div className="hero__slider-nav">
+          <button onClick={() => changeSlide(-1)} aria-label="Предыдущий фильм"><ChevronLeft /></button>
+          <div className="hero__progress"><i /></div>
+          <b>{String((activeSlide % slides.length) + 1).padStart(2, "0")}</b>
+          <span>/ {String(slides.length).padStart(2, "0")}</span>
+          <button onClick={() => changeSlide(1)} aria-label="Следующий фильм"><ChevronRight /></button>
         </div>
       </section>
       <section className="content-section">
